@@ -3,7 +3,6 @@ package PARY.services.implementacion;
 import PARY.services.contratos.IGenericsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -37,7 +36,6 @@ public class GenericsImpl <E, D extends CrudRepository<E, Long>> implements IGen
     @Override
     @Transactional
     public void deleteById(long id) {
-        System.out.println("si llamaa al metodo");
         DAO.deleteById(id);
     }
 

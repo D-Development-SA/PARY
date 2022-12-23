@@ -118,6 +118,8 @@ public class ControladorAct {
     @DeleteMapping("/actividades/deleteAllAct")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAllAct(){
+        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, -1,
+                Constant_RegAcciones.ELIMINACION, "deleteAll");
         act.deleteAll();
     }
 }

@@ -78,6 +78,10 @@ public class ControladorReserv {
     @DeleteMapping("/reservaciones/deleteReserv")
     @ResponseStatus(HttpStatus.OK)
     public void deleteGroupReserv(@RequestBody List<Reservacion> reser){
+        reser.stream().forEach(a->{
+            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, a.getId(),
+                    Constant_RegAcciones.ELIMINACION, a.getActividades().getNombre());
+        });
         reserv.deleteAll(reser);
     }
 
