@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Ficheros locales aux ###
+src/main/java/PARY/p.java
+src/main/java/PARY/tareas.txt
