@@ -41,7 +41,7 @@ public class misActividadIMPL extends GenericsImpl<MisActividades, IMisActidadDA
 
         List<MisActividades> actividades = findAll();
 
-        actividades.stream().forEach(a-> fechaMap.put(a.getId(),
+        actividades.forEach(a-> fechaMap.put(a.getId(),
                 Integer.parseInt(a.getFechaHora().
                         substring(0, 10).
                         replaceAll("-",""))));
@@ -55,10 +55,18 @@ public class misActividadIMPL extends GenericsImpl<MisActividades, IMisActidadDA
                 }
             }
         });
-        actividades.stream()
-                    .forEach(a->RegistroAccionIMPL
-                            .crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, a.getId(),
-                                    Constant_RegAcciones.ELIMINACION, a.getNombre()));
+        actividades.forEach(a->{
+                        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD,
+                                                    a.getId(),
+                                                    Constant_RegAcciones.ELIMINACION,
+                                                    a.getNombre());
+
+                        if(a.getReservacion() != null)
+                            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION,
+                                                        a.getReservacion().getId(),
+                                                        Constant_RegAcciones.ELIMINACION,
+                                                        a.getNombre());
+                    });
         DAO.deleteAll(actividades);
     }
 

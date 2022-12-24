@@ -30,7 +30,7 @@ public class MisActividades implements Serializable {
     @Enumerated(EnumType.STRING)
     private Constant_Act tipoAct;
 
-    @OneToOne(cascade = {CascadeType.REFRESH,CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "reservacion_id", foreignKey = @ForeignKey(name = "FK_RESERVACION_ID"))
     @JsonIgnoreProperties({"actividades"})
     private Reservacion reservacion;

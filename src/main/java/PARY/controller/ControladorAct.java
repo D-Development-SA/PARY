@@ -63,7 +63,7 @@ public class ControladorAct {
 
 //-----------------------PutMappings-----------------------------------
 
-    /* Actualiza una Actividad en especifico */
+    /* Actualiza una Actividad en especifico y crea una reservacion si el param reser = true */
     @PutMapping("/actividades/actualizarAct/{id}+{reserv}")
     @ResponseStatus(HttpStatus.CREATED)
     public MisActividades updateAct(@RequestBody MisActividades misActividades, @PathVariable Long id, @PathVariable boolean reserv){
@@ -86,15 +86,17 @@ public class ControladorAct {
             r.setEstado(Constant_Reservaciones.ESTADO_PENDIENTE);
             r.setAprobacion(false);
             r.setActividades(auxAct);
+            r.setFechaHora(auxAct.getFechaHora());
             auxAct.setReservacion(r);
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.RESERVACION,
-                    nombre+"->"+misActividades.getNombre());
         }else auxAct.setReservacion(misActividades.getReservacion());
         auxAct.setPerfil(misActividades.getPerfil());
 
+        MisActividades aux = act.save(auxAct);
 
-        return act.save(auxAct);
+        if (reserv) RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, aux.getReservacion().getId(),
+                Constant_RegAcciones.RESERVACION, misActividades.getNombre());
+
+        return aux;
     }
 
 //-----------------------DeleteMappings-----------------------------------
@@ -103,7 +105,15 @@ public class ControladorAct {
     @DeleteMapping("/actividades/deleteAct/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAct(@PathVariable Long id){
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id, Constant_RegAcciones.ELIMINACION, findActById(id).getNombre());
+        MisActividades aux = findActById(id);
+
+        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id,
+                Constant_RegAcciones.ELIMINACION, aux.getNombre());
+
+        if(aux.getReservacion() != null){
+            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, aux.getReservacion().getId(),
+                    Constant_RegAcciones.ELIMINACION, aux.getNombre());
+        }
         act.deleteById(id);
     }
 

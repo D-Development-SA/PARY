@@ -19,9 +19,8 @@ public class RegistroAccion implements Serializable {
     private long idTipo;
     private String tipo;    //Tipo: Actividad o Reservacion
     private String nombreAct_Reserv;
-    @Enumerated
     @Column(nullable = false, length = 13)
-    private Constant_RegAcciones accion;
+    private String accion;
     @Column(nullable = false)
     private String fechaHora;
 
@@ -37,7 +36,7 @@ public class RegistroAccion implements Serializable {
         this.idTipo = idTipo;
         this.tipo = tipo;
         this.nombreAct_Reserv = nombreAct_Reserv;
-        this.accion = accion;
+        this.accion = String.valueOf(accion);
         this.fechaHora = fechaHora;
         this.perfil = perfil;
     }
@@ -45,7 +44,7 @@ public class RegistroAccion implements Serializable {
     public RegistroAccion(long idTipo, String tipo, Constant_RegAcciones accion, String nombreAct_Reserv) {
         this.idTipo = idTipo;
         this.tipo = tipo;
-        this.accion = accion;
+        this.accion = String.valueOf(accion);
         this.nombreAct_Reserv = nombreAct_Reserv;
     }
 
@@ -89,12 +88,12 @@ public class RegistroAccion implements Serializable {
         this.nombreAct_Reserv = nombreAct_Reserv;
     }
 
-    public Constant_RegAcciones getAccion() {
+    public String getAccion() {
         return accion;
     }
 
     public void setAccion(Constant_RegAcciones accion) {
-        this.accion = accion;
+        this.accion = String.valueOf(accion);
     }
 
     public Perfil getPerfil() {

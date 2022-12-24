@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "registros")
+@Table(name = "autenticaciones")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Autenticacion implements Serializable {
 
