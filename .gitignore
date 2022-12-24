@@ -34,4 +34,4 @@ build/
 
 ### Ficheros locales aux ###
 src/main/java/PARY/p.java
-src/main/java/PARY/info/**
+src/main/java/PARY/info/*.txt
