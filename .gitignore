@@ -34,5 +34,4 @@ build/
 
 ### Ficheros locales aux ###
 src/main/java/PARY/p.java
-src/main/java/PARY/tareas.txt
-src/main/java/PARY/enlaces.txt
+src/main/java/PARY/info
