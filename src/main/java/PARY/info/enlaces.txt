@@ -1,0 +1,124 @@
+////////////----------Actividades-------/////////////////
+Devuelve todas las Actividades
+-> http://localhost:8080/api/actividades
+
+Devuelve una Actividad en especifico
+-> http://localhost:8080/api/actividades/buscarID/{id}
+
+Devuelve todas las Actividades que contengan un nombre en especifico
+-> http://localhost:8080/actividades/buscarNombres/{nombre}
+
+Devuelve todas las Actividades ordenadas por fecha
+-> http://localhost:8080/api/actividades/recent
+
+Crea y devuelve una Actividad
+-> http://localhost:8080/api/actividades/crearAct
+
+Actualiza una Actividad en especifico y crea una reservacion si el param reser = true
+-> http://localhost:8080/api/actividades/actualizarAct/{id}+{reserv}
+
+Elimina una Actividad en especifico
+-> http://localhost:8080/api/actividades/deleteAct/{id}
+
+Elimina todas las Actividades que ya hayan transcurrido
+-> http://localhost:8080/api/actividades/deleteOldAct
+
+Elimina todas las Actividades
+-> http://localhost:8080/api/actividades/deleteAllAct
+
+
+////////////----------Reservaciones-------/////////////////
+Devuelve todas las Reservaciones
+-> http://localhost:8080/api/reservaciones
+
+Actualiza una Reservacion en especifico
+-> http://localhost:8080/api/reservaciones/{id}
+
+Elimina una Reservacion en especifico
+-> http://localhost:8080/api/reservaciones/deleteReserv/{id}
+
+Elimina todas las Reservaciones que se especifiquen
+-> http://localhost:8080/api/reservaciones/deleteReserv
+
+
+////////////----------Registro de acciones-------/////////////////
+Devuelve todos las Registros
+-> http://localhost:8080/api/registro
+
+Elimina un Registro en especifico
+-> http://localhost:8080/api/registro/eliminarRegId/{id}
+
+Elimina todos las Registros
+-> http://localhost:8080/api/registro/eliminarAllReg
+
+////////////----------Perfiles-------/////////////////
+Devuelve todos los Perfiles
+-> http://localhost:8080/api/perfiles
+
+Devuelve un Perfil en especifico
+-> http://localhost:8080/api/perfiles/buscarID/{id}
+
+Devuelve todos los Perfiles que contengan un nombre en especifico
+-> http://localhost:8080/api/perfiles/buscarNombres/{nombres}
+
+Devuelve todos los Perfiles que contengan un fragmento del CI especificado
+-> http://localhost:8080/api/perfiles/buscarCI/{CI}
+
+Crea y devuelve un Perfil
+-> http://localhost:8080/api/perfiles/crearPerfil
+
+Actualiza un Perfil en especifico
+-> http://localhost:8080/api/perfiles/actualizarPerfil/{id}
+
+Elimina un Perfil en especifico
+-> http://localhost:8080/api/perfiles/deletePerfil/{id}
+
+Elimina todos los Perfiles
+-> http://localhost:8080/api/perfiles/deleteAllAct
+
+////////////----------Datos de las Actividades-------/////////////////
+Devuelve los comentarios de la actividad
+-> http://localhost:8080/api/comentario/findAllComentarios/{id}
+
+Devuelve la cantidad de me encanta de la actividad
+-> http://localhost:8080/api/comentario/cantMeEncanta/{id}
+
+Devuelve la cantidad de comentarios de la actividad
+-> http://localhost:8080/api/comentario/findAllComentarios/{id}
+
+Agrega un comentario del perfil
+-> http://localhost:8080/api/comentario/AgregarComentario/{id}+{coment}
+
+Actualiza los comentarios de una actividad
+-> http://localhost:8080/api/comentario/CambiarComentario/{id}
+
+Annadir un me encanta de un perfil
+id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
+-> http://localhost:8080/api/comentario/addOrDelMeEncanta/{id}+{idP}+{addOrDel}
+
+Agrega o elimina la actividad de Actividades
+-> http://localhost:8080/api/comentario/addActMisActiv/{id}+{add}
+
+Validar annadir a mis Act
+id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
+-> http://localhost:8080/api/comentario/addOrDel/{id}+{idP}+{addOrDel}
+
+Si el perfil add o no una actividad
+-> http://localhost:8080/api/comentario/addOrDelPerfil/{id}+{idP}
+
+Todas las actividades add a mis actividades de un perfil
+-> http://localhost:8080/api/comentario/addAllPerfil/{idP}
+
+////////////----------Mis Actividades-------/////////////////
+Devuelve las MisActividades
+-> http://localhost:8080/api/MisActividades
+
+Devuelve las Actividades que esten agregadas a MisActividades del perfil especificado
+-> http://localhost:8080/api/MisActividades/{idP}
+
+Devuelve y crea MisActividades de un perfil
+-> http://localhost:8080/api/MisActividades/createMisAct
+
+
+
+

@@ -1,7 +1,7 @@
 package PARY.services.implementacion;
 
-import PARY.DAO.IMisActidadDAO;
-import PARY.entity.MisActividades;
+import PARY.DAO.IMisActividadDAO;
+import PARY.entity.misActividades;
 import PARY.entity.constantes.Constant_RegAcciones;
 import PARY.services.contratos.IMisActividadesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +13,22 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class misActividadIMPL extends GenericsImpl<MisActividades, IMisActidadDAO> implements IMisActividadesService {
+public class misActividadIMPL extends GenericsImpl<misActividades, IMisActividadDAO> implements IMisActividadesService {
 
     @Autowired
-    public misActividadIMPL(IMisActidadDAO dao) {
+    public misActividadIMPL(IMisActividadDAO dao) {
         super(dao);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MisActividades> findActividadesByNombreContains(String nombre) {
+    public List<misActividades> findActividadesByNombreContains(String nombre) {
         return DAO.findActividadesByNombreContains(nombre);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MisActividades> showRecentAct() {
+    public List<misActividades> showRecentAct() {
         return DAO.findActividadesByOrderByFechaHoraDesc();
     }
 
@@ -39,7 +39,7 @@ public class misActividadIMPL extends GenericsImpl<MisActividades, IMisActidadDA
         int fechaNum = Integer.parseInt(fecha.replaceAll("-",""));
         HashMap<Long, Integer> fechaMap = new HashMap<>();
 
-        List<MisActividades> actividades = findAll();
+        List<misActividades> actividades = findAll();
 
         actividades.forEach(a-> fechaMap.put(a.getId(),
                 Integer.parseInt(a.getFechaHora().
@@ -48,11 +48,7 @@ public class misActividadIMPL extends GenericsImpl<MisActividades, IMisActidadDA
 
         fechaMap.forEach((a,b)->{
             if (b >= fechaNum) {
-                for (int i = 0; i < actividades.size(); i++) {
-                    if (actividades.get(i).getId() == a) {
-                        actividades.remove(i);
-                    }
-                }
+                actividades.removeIf(c-> c.getId() == a);
             }
         });
         actividades.forEach(a->{
