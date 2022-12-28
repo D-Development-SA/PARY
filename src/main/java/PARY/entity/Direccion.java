@@ -1,19 +1,22 @@
 package PARY.entity;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
-@Embeddable
+@Entity
+@Table(name = "direcciones")
 public class Direccion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
     private String calle;
+    private String coordenadas;
     private String entreCalle;
     private String provincia;
     private String municipio;
     private String reparto;
-
-    public Direccion() {
-    }
 
     public Direccion(String calle, String entreCalle, String provincia, String municipio, String reparto) {
         this.calle = calle;
@@ -21,6 +24,17 @@ public class Direccion {
         this.provincia = provincia;
         this.municipio = municipio;
         this.reparto = reparto;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Direccion() {
     }
 
     public String getCalle() {
@@ -61,6 +75,14 @@ public class Direccion {
 
     public void setReparto(String reparto) {
         this.reparto = reparto;
+    }
+
+    public String getCoordenadas() {
+        return coordenadas;
+    }
+
+    public void setCoordenadas(String coordenadas) {
+        this.coordenadas = coordenadas;
     }
 
     @Override

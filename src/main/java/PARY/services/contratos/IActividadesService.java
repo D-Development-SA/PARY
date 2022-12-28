@@ -1,13 +1,13 @@
 package PARY.services.contratos;
 
-import PARY.entity.misActividades;
+import PARY.entity.Actividad;
 
 import java.util.List;
 
-public interface IMisActividadesService extends IGenericsService<misActividades>{
-    List<misActividades> findActividadesByNombreContains(String nombre);
+public interface IActividadesService extends IGenericsService<Actividad>{
+    List<Actividad> findActividadesByNombreContains(String nombre);
 
-    List<misActividades> showRecentAct();
+    List<Actividad> showRecentAct();
 
     void deleteOldAct();
 

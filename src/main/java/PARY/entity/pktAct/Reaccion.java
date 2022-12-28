@@ -2,35 +2,36 @@ package PARY.entity.pktAct;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "datosDactividad")
-public class DatosAct {
+@Table(name = "reacciones")
+public class Reaccion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
     private Long idPerfil;
-    private String textComent;
+    private String apellidoP;
+    private String nombreP;
     private boolean valMeEncanta;
     private boolean valAddMisActividades;
 
-    public DatosAct() {
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Comentario> comentarios;
+
+    public Reaccion() {
     }
 
-    public DatosAct(Long id, Long idPerfil, String textComent,
-                    boolean valMeEncanta, boolean valAddMisActividades) {
+    public Reaccion(Long id, Long idPerfil, String apellidoP, String nombreP, boolean valMeEncanta, boolean valAddMisActividades, List<Comentario> comentarios) {
         this.id = id;
         this.idPerfil = idPerfil;
-        this.textComent = textComent;
+        this.apellidoP = apellidoP;
+        this.nombreP = nombreP;
         this.valMeEncanta = valMeEncanta;
         this.valAddMisActividades = valAddMisActividades;
-    }
-
-    public DatosAct(Long idPerfil, String textComent) {
-        this.idPerfil = idPerfil;
-        this.textComent = textComent;
+        this.comentarios = comentarios;
     }
 
     public Long getId() {
@@ -49,15 +50,23 @@ public class DatosAct {
         this.idPerfil = idPerfil;
     }
 
-    public String getTextComent() {
-        return textComent;
+    public String getApellidoP() {
+        return apellidoP;
     }
 
-    public void setTextComent(String textComent) {
-        this.textComent = textComent;
+    public void setApellidoP(String apellidoP) {
+        this.apellidoP = apellidoP;
     }
 
-    public boolean getValMeEncanta() {
+    public String getNombreP() {
+        return nombreP;
+    }
+
+    public void setNombreP(String nombreP) {
+        this.nombreP = nombreP;
+    }
+
+    public boolean isValMeEncanta() {
         return valMeEncanta;
     }
 
@@ -65,7 +74,7 @@ public class DatosAct {
         this.valMeEncanta = valMeEncanta;
     }
 
-    public boolean getValAddMisActividades() {
+    public boolean isValAddMisActividades() {
         return valAddMisActividades;
     }
 
@@ -73,16 +82,24 @@ public class DatosAct {
         this.valAddMisActividades = valAddMisActividades;
     }
 
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DatosAct datosAct = (DatosAct) o;
-        return id.equals(datosAct.id) && idPerfil.equals(datosAct.idPerfil) && Objects.equals(textComent, datosAct.textComent) && Objects.equals(valMeEncanta, datosAct.valMeEncanta) && Objects.equals(valAddMisActividades, datosAct.valAddMisActividades);
+        Reaccion reaccion = (Reaccion) o;
+        return valMeEncanta == reaccion.valMeEncanta && valAddMisActividades == reaccion.valAddMisActividades && id.equals(reaccion.id) && idPerfil.equals(reaccion.idPerfil) && Objects.equals(apellidoP, reaccion.apellidoP) && nombreP.equals(reaccion.nombreP);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idPerfil, textComent, valMeEncanta, valAddMisActividades);
+        return Objects.hash(id, idPerfil, apellidoP, nombreP, valMeEncanta, valAddMisActividades);
     }
 }

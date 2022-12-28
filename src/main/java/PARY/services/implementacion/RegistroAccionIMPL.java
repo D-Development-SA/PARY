@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 public class RegistroAccionIMPL extends GenericsImpl<RegistroAccion, IRegistroAccionDAO> implements IRegistroAccionService {
     public static final String TIPO_ACTIVIDAD = "Actividad";
     public static final String TIPO_RESERVACION = "Reservacion";
+    public static final String TIPO_PERFIL = "Perfil";
     private static IRegistroAccionDAO regDao;
 
     @Autowired

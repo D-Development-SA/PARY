@@ -1,30 +1,30 @@
-////////////----------Actividades-------/////////////////
-Devuelve todas las Actividades
--> http://localhost:8080/api/actividades
+////////////----------Actividad-------/////////////////
+Devuelve todas las Actividad
+-> http://localhost:8080/api/actividad
 
 Devuelve una Actividad en especifico
--> http://localhost:8080/api/actividades/buscarID/{id}
+-> http://localhost:8080/api/actividad/buscarID/{id}
 
-Devuelve todas las Actividades que contengan un nombre en especifico
--> http://localhost:8080/actividades/buscarNombres/{nombre}
+Devuelve todas las Actividad que contengan un nombre en especifico
+-> http://localhost:8080/actividad/buscarNombres/{nombre}
 
-Devuelve todas las Actividades ordenadas por fecha
--> http://localhost:8080/api/actividades/recent
+Devuelve todas las Actividad ordenadas por fecha
+-> http://localhost:8080/api/actividad/recent
 
 Crea y devuelve una Actividad
--> http://localhost:8080/api/actividades/crearAct
+-> http://localhost:8080/api/actividad/crearAct
 
 Actualiza una Actividad en especifico y crea una reservacion si el param reser = true
--> http://localhost:8080/api/actividades/actualizarAct/{id}+{reserv}
+-> http://localhost:8080/api/actividad/actualizarAct/{id}+{reserv}
 
 Elimina una Actividad en especifico
--> http://localhost:8080/api/actividades/deleteAct/{id}
+-> http://localhost:8080/api/actividad/deleteAct/{id}
 
-Elimina todas las Actividades que ya hayan transcurrido
--> http://localhost:8080/api/actividades/deleteOldAct
+Elimina todas las Actividad que ya hayan transcurrido
+-> http://localhost:8080/api/actividad/deleteOldAct
 
-Elimina todas las Actividades
--> http://localhost:8080/api/actividades/deleteAllAct
+Elimina todas las Actividad
+-> http://localhost:8080/api/actividad/deleteAllAct
 
 
 ////////////----------Reservaciones-------/////////////////
@@ -76,7 +76,7 @@ Elimina un Perfil en especifico
 Elimina todos los Perfiles
 -> http://localhost:8080/api/perfiles/deleteAllAct
 
-////////////----------Datos de las Actividades-------/////////////////
+////////////----------Datos de las Actividad-------/////////////////
 Devuelve los comentarios de la actividad
 -> http://localhost:8080/api/comentario/findAllComentarios/{id}
 
@@ -96,7 +96,7 @@ Annadir un me encanta de un perfil
 id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
 -> http://localhost:8080/api/comentario/addOrDelMeEncanta/{id}+{idP}+{addOrDel}
 
-Agrega o elimina la actividad de Actividades
+Agrega o elimina la actividad de Actividad
 -> http://localhost:8080/api/comentario/addActMisActiv/{id}+{add}
 
 Validar annadir a mis Act
@@ -106,14 +106,14 @@ id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta ac
 Si el perfil add o no una actividad
 -> http://localhost:8080/api/comentario/addOrDelPerfil/{id}+{idP}
 
-Todas las actividades add a mis actividades de un perfil
+Todas las actividad add a mis actividad de un perfil
 -> http://localhost:8080/api/comentario/addAllPerfil/{idP}
 
-////////////----------Mis Actividades-------/////////////////
+////////////----------Mis Actividad-------/////////////////
 Devuelve las MisActividades
 -> http://localhost:8080/api/MisActividades
 
-Devuelve las Actividades que esten agregadas a MisActividades del perfil especificado
+Devuelve las Actividad que esten agregadas a MisActividades del perfil especificado
 -> http://localhost:8080/api/MisActividades/{idP}
 
 Devuelve y crea MisActividades de un perfil

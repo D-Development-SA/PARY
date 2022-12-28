@@ -4,6 +4,7 @@ import PARY.entity.constantes.Constant_Reservaciones;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -18,23 +19,25 @@ public class Reservacion implements Serializable {
     @Enumerated(EnumType.STRING)
     private Constant_Reservaciones estado;
 
-    @OneToOne(mappedBy = "reservacion", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private MisActividades actividades;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "actividades_id")
+    private Actividad actividad;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "perfil_id", foreignKey = @ForeignKey(name = "FK_PERFIL_ID3"))
-    private Perfil perfil;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "perfilReser", joinColumns = @JoinColumn(name = "reservacion_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id"))
+    private List<Perfil> perfil;
 
     public Reservacion() {
     }
 
-    public Reservacion(long id, boolean aprobacion, Constant_Reservaciones estado,
-                       MisActividades actividades, String fechaHora, Perfil perfil) {
+    public Reservacion(long id, boolean aprobacion, String fechaHora, Constant_Reservaciones estado,
+                       Actividad actividad, List<Perfil> perfil) {
         this.id = id;
         this.aprobacion = aprobacion;
-        this.estado = estado;
-        this.actividades = actividades;
         this.fechaHora = fechaHora;
+        this.estado = estado;
+        this.actividad = actividad;
         this.perfil = perfil;
     }
 
@@ -62,13 +65,6 @@ public class Reservacion implements Serializable {
         this.estado = estado;
     }
 
-    public MisActividades getActividades() {
-        return actividades;
-    }
-
-    public void setActividades(MisActividades actividades) {
-        this.actividades = actividades;
-    }
 
     public String getFechaHora() {
         return fechaHora;
@@ -78,11 +74,19 @@ public class Reservacion implements Serializable {
         this.fechaHora = fechaHora;
     }
 
-    public Perfil getPerfil() {
+    public Actividad getActividades() {
+        return actividad;
+    }
+
+    public void setActividades(Actividad actividad) {
+        this.actividad = actividad;
+    }
+
+    public List<Perfil> getPerfil() {
         return perfil;
     }
 
-    public void setPerfil(Perfil perfil) {
+    public void setPerfil(List<Perfil> perfil) {
         this.perfil = perfil;
     }
 

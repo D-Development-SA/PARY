@@ -3,6 +3,7 @@ package PARY.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,11 +23,8 @@ public class Perfil extends Autenticacion implements Serializable {
     private String CI;
     //private Imagen imgPerfil;
 
-    @OneToOne(mappedBy = "perfil", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private RegistroAccion RegAccion;
-
-    @OneToOne(mappedBy = "perfil", fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-    private Reservacion reservacion;
+    @ManyToMany(mappedBy = "perfil", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Reservacion> reservacion;
 
     @OneToMany(mappedBy = "perfil", fetch = FetchType.LAZY)
     private Set<MisActividades> MisActividades;
@@ -35,33 +33,33 @@ public class Perfil extends Autenticacion implements Serializable {
     }
 
     public Perfil(long id, String nombre, String apellidos, String CI,
-                  RegistroAccion regAccion, Reservacion reservacion, Set<MisActividades> MisActividades) {
+                  List<Reservacion> reservacion, Set<PARY.entity.MisActividades> misActividades) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.CI = CI;
-        RegAccion = regAccion;
         this.reservacion = reservacion;
-        this.MisActividades = MisActividades;
+        MisActividades = misActividades;
     }
 
     public Perfil(long id, String usuario, String contrasenna, String numTel, String codigoToken,
-                  long id1, String nombre, String apellidos, String CI, RegistroAccion regAccion,
-                  Reservacion reservacion, Set<MisActividades> MisActividades) {
+                  long id1, String nombre, String apellidos, String CI, List<Reservacion> reservacion,
+                  Set<PARY.entity.MisActividades> misActividades) {
         super(id, usuario, contrasenna, numTel, codigoToken);
         this.id = id1;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.CI = CI;
-        RegAccion = regAccion;
         this.reservacion = reservacion;
-        this.MisActividades = MisActividades;
+        MisActividades = misActividades;
     }
 
+    @Override
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
@@ -90,40 +88,33 @@ public class Perfil extends Autenticacion implements Serializable {
         this.CI = CI;
     }
 
-    public RegistroAccion getRegAccion() {
-        return RegAccion;
-    }
-
-    public void setRegAccion(RegistroAccion regAccion) {
-        RegAccion = regAccion;
-    }
-
-    public Reservacion getReservacion() {
+    public List<Reservacion> getReservacion() {
         return reservacion;
     }
 
-    public void setReservacion(Reservacion reservacion) {
+    public void setReservacion(List<Reservacion> reservacion) {
         this.reservacion = reservacion;
     }
 
-    public Set<MisActividades> getActividad() {
+    public Set<PARY.entity.MisActividades> getMisActividades() {
         return MisActividades;
     }
 
-    public void setActividad(Set<MisActividades> MisActividades) {
-        this.MisActividades = MisActividades;
+    public void setMisActividades(Set<PARY.entity.MisActividades> misActividades) {
+        MisActividades = misActividades;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Perfil perfil = (Perfil) o;
-        return id == perfil.id && nombre.equals(perfil.nombre) && CI.equals(perfil.CI);
+        return id == perfil.id && nombre.equals(perfil.nombre) && Objects.equals(apellidos, perfil.apellidos) && CI.equals(perfil.CI) && Objects.equals(reservacion, perfil.reservacion) && Objects.equals(MisActividades, perfil.MisActividades);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nombre, CI);
+        return Objects.hash(super.hashCode(), id, nombre, apellidos, CI, reservacion, MisActividades);
     }
 }

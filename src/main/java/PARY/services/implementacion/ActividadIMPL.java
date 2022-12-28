@@ -1,9 +1,10 @@
 package PARY.services.implementacion;
 
-import PARY.DAO.IMisActividadDAO;
-import PARY.entity.misActividades;
+import PARY.DAO.IActividadDAO;
+import PARY.entity.Actividad;
+import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
-import PARY.services.contratos.IMisActividadesService;
+import PARY.services.contratos.IActividadesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,22 +14,22 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class misActividadIMPL extends GenericsImpl<misActividades, IMisActividadDAO> implements IMisActividadesService {
+public class ActividadIMPL extends GenericsImpl<Actividad, IActividadDAO> implements IActividadesService {
 
     @Autowired
-    public misActividadIMPL(IMisActividadDAO dao) {
+    public ActividadIMPL(IActividadDAO dao) {
         super(dao);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<misActividades> findActividadesByNombreContains(String nombre) {
+    public List<Actividad> findActividadesByNombreContains(String nombre) {
         return DAO.findActividadesByNombreContains(nombre);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<misActividades> showRecentAct() {
+    public List<Actividad> showRecentAct() {
         return DAO.findActividadesByOrderByFechaHoraDesc();
     }
 
@@ -39,7 +40,7 @@ public class misActividadIMPL extends GenericsImpl<misActividades, IMisActividad
         int fechaNum = Integer.parseInt(fecha.replaceAll("-",""));
         HashMap<Long, Integer> fechaMap = new HashMap<>();
 
-        List<misActividades> actividades = findAll();
+        List<Actividad> actividades = findAll();
 
         actividades.forEach(a-> fechaMap.put(a.getId(),
                 Integer.parseInt(a.getFechaHora().
@@ -51,18 +52,23 @@ public class misActividadIMPL extends GenericsImpl<misActividades, IMisActividad
                 actividades.removeIf(c-> c.getId() == a);
             }
         });
-        actividades.forEach(a->{
-                        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD,
-                                                    a.getId(),
-                                                    Constant_RegAcciones.ELIMINACION,
-                                                    a.getNombre());
 
-                        if(a.getReservacion() != null)
-                            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION,
-                                                        a.getReservacion().getId(),
-                                                        Constant_RegAcciones.ELIMINACION,
-                                                        a.getNombre());
-                    });
+        actividades.forEach(a -> {
+            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD,
+                    a.getId(),
+                    Constant_RegAcciones.ELIMINACION,
+                    a.getNombre());
+
+            if (a.getReservacion() != null) {
+                for (Reservacion d :
+                        a.getReservacion()) {
+                    RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION,
+                            d.getId(),
+                            Constant_RegAcciones.ELIMINACION,
+                            a.getNombre());
+                }
+            }
+        });
         DAO.deleteAll(actividades);
     }
 

@@ -1,2 +1,3 @@
-package PARY.controller;public class ControladorMisActividades {
+package PARY.controller;
+public class ControladorMisActividades {
 }
