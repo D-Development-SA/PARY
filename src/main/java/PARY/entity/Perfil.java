@@ -1,55 +1,58 @@
 package PARY.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "perfiles")
-@PrimaryKeyJoinColumn(name = "registro_id")
+@PrimaryKeyJoinColumn(name = "autenticacion_id")
 public class Perfil extends Autenticacion implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, length = 10)
+    @Column(length = 10)
     private String nombre;
-    @Column(nullable = false, length = 30)
+    @Column(length = 30)
     private String apellidos;
-    @Column(nullable = false, length = 11, unique = true)
-    private String CI;
+    @Column(length = 11, unique = true)
+    private String ci;
     //private Imagen imgPerfil;
 
     @ManyToMany(mappedBy = "perfil", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Reservacion> reservacion;
+    @JsonIgnoreProperties("perfil")
+    private Set<Reservacion> reservacion;
 
-    @OneToMany(mappedBy = "perfil", fetch = FetchType.LAZY)
-    private Set<MisActividades> MisActividades;
+    @OneToMany(mappedBy = "perfil",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"perfil","idPerfil","cantReserv","cantComent","cantMeEncanta"})
+    private Set<Actividad> MisActividades;
 
     public Perfil() {
     }
 
-    public Perfil(long id, String nombre, String apellidos, String CI,
-                  List<Reservacion> reservacion, Set<PARY.entity.MisActividades> misActividades) {
+    public Perfil(long id, String nombre, String apellidos, String ci, Set<Reservacion> reservacion,
+                  Set<Actividad> misActividades) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
-        this.CI = CI;
+        this.ci = ci;
         this.reservacion = reservacion;
         MisActividades = misActividades;
     }
 
     public Perfil(long id, String usuario, String contrasenna, String numTel, String codigoToken,
-                  long id1, String nombre, String apellidos, String CI, List<Reservacion> reservacion,
-                  Set<PARY.entity.MisActividades> misActividades) {
+                  long id1, String nombre, String apellidos, String ci, Set<Reservacion> reservacion,
+                  Set<Actividad> misActividades) {
         super(id, usuario, contrasenna, numTel, codigoToken);
         this.id = id1;
         this.nombre = nombre;
         this.apellidos = apellidos;
-        this.CI = CI;
+        this.ci = ci;
         this.reservacion = reservacion;
         MisActividades = misActividades;
     }
@@ -80,27 +83,27 @@ public class Perfil extends Autenticacion implements Serializable {
         this.apellidos = apellidos;
     }
 
-    public String getCI() {
-        return CI;
+    public String getCi() {
+        return ci;
     }
 
-    public void setCI(String CI) {
-        this.CI = CI;
+    public void setCi(String ci) {
+        this.ci = ci;
     }
 
-    public List<Reservacion> getReservacion() {
+    public Set<Reservacion> getReservacion() {
         return reservacion;
     }
 
-    public void setReservacion(List<Reservacion> reservacion) {
+    public void setReservacion(Set<Reservacion> reservacion) {
         this.reservacion = reservacion;
     }
 
-    public Set<PARY.entity.MisActividades> getMisActividades() {
+    public Set<Actividad> getMisActividades() {
         return MisActividades;
     }
 
-    public void setMisActividades(Set<PARY.entity.MisActividades> misActividades) {
+    public void setMisActividades(Set<Actividad> misActividades) {
         MisActividades = misActividades;
     }
 
@@ -110,11 +113,11 @@ public class Perfil extends Autenticacion implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Perfil perfil = (Perfil) o;
-        return id == perfil.id && nombre.equals(perfil.nombre) && Objects.equals(apellidos, perfil.apellidos) && CI.equals(perfil.CI) && Objects.equals(reservacion, perfil.reservacion) && Objects.equals(MisActividades, perfil.MisActividades);
+        return id == perfil.id && nombre.equals(perfil.nombre) && Objects.equals(apellidos, perfil.apellidos) && ci.equals(perfil.ci) && Objects.equals(reservacion, perfil.reservacion) && Objects.equals(MisActividades, perfil.MisActividades);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nombre, apellidos, CI, reservacion, MisActividades);
+        return Objects.hash(super.hashCode(), id, nombre, apellidos, ci, reservacion, MisActividades);
     }
 }

@@ -1,10 +1,12 @@
 package PARY.entity.pktAct;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "cantidades")
-public class Cantidad {
+public class Cantidad implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -13,14 +15,25 @@ public class Cantidad {
     private int cantComent;
     private int cantMeEncanta;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn
+    private List<Reaccion> reaccions;
+
     public Cantidad() {
     }
 
-    public Cantidad(Long id, int cantReserv, int cantComent, int cantMeEncanta) {
+    public Cantidad(int cantReserv, int cantComent, int cantMeEncanta) {
+        this.cantReserv = cantReserv;
+        this.cantComent = cantComent;
+        this.cantMeEncanta = cantMeEncanta;
+    }
+
+    public Cantidad(Long id, int cantReserv, int cantComent, int cantMeEncanta, List<Reaccion> reaccions) {
         this.id = id;
         this.cantReserv = cantReserv;
         this.cantComent = cantComent;
         this.cantMeEncanta = cantMeEncanta;
+        this.reaccions = reaccions;
     }
 
     public Long getId() {
@@ -53,5 +66,13 @@ public class Cantidad {
 
     public void setCantMeEncanta(int cantMeEncanta) {
         this.cantMeEncanta = cantMeEncanta;
+    }
+
+    public List<Reaccion> getReaccions() {
+        return reaccions;
+    }
+
+    public void setReaccions(List<Reaccion> reaccions) {
+        this.reaccions = reaccions;
     }
 }

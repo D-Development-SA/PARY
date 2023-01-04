@@ -1,39 +1,86 @@
 ////////////----------Actividad-------/////////////////
+GET
+____
 Devuelve todas las Actividad
--> http://localhost:8080/api/actividad
+-> http://localhost:8080/api/actividades
 
 Devuelve una Actividad en especifico
--> http://localhost:8080/api/actividad/buscarID/{id}
+-> http://localhost:8080/api/actividades/buscarID/{id}
 
-Devuelve todas las Actividad que contengan un nombre en especifico
--> http://localhost:8080/actividad/buscarNombres/{nombre}
+Devuelve todas las Actividades que contengan un nombre en especifico
+-> http://localhost:8080/actividades/buscarNombres/{nombre}
 
-Devuelve todas las Actividad ordenadas por fecha
--> http://localhost:8080/api/actividad/recent
+Devuelve todas las Actividades ordenadas por fecha
+-> http://localhost:8080/api/actividades/recent
 
-Crea y devuelve una Actividad
--> http://localhost:8080/api/actividad/crearAct
+Devuelve la cantidad de comentarios de la actividad
+-> http://localhost:8080/api/actividades/comentario/cantComentarios/{id}
 
-Actualiza una Actividad en especifico y crea una reservacion si el param reser = true
--> http://localhost:8080/api/actividad/actualizarAct/{id}+{reserv}
+Devuelve la cantidad de me encanta de la actividad
+-> http://localhost:8080/api/actividades/cantMeEncanta/{id}
 
+Devuelve los comentarios de la actividad
+-> http://localhost:8080/api/actividades/comentario/findAllComentarios/{id}
+
+Devuelve la cantidad de Activides
+-> http://localhost:8080/api/actividades/cantidad
+
+POST
+_____
+Crea y devuelve una Actividad----------------RequestBody
+-> http://localhost:8080/api/actividades/crearAct
+
+PUT
+____
+Actualiza una Actividad en especifico----------------RequestBody
+-> http://localhost:8080/api/actividades/actualizarAct/{id}
+
+PATCH
+______
+Agrega un comentario del perfil----------------RequestBody
+-> http://localhost:8080/api/actividades/comentario/AgregarComentario/{id}+{idP}
+
+Actualiza los comentarios de una actividad----------------RequestBody
+-> http://localhost:8080/api/actividades/comentario//CambiarComentario/{id}+{idP}
+
+Annadir un me encanta de un perfil
+id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
+-> http://localhost:8080/api/actividades/addOrDelMeEncanta/{id}+{add}+{idP}
+
+Agrega o elimina la actividad de MisActividades
+-> http://localhost:8080/api/actividades/addActMisActiv/{id}+{add}+{idP}
+
+Crea una reservacion si el param reser = true
+-> http://localhost:8080/api/actividades/creaReser/{id}+{reserv}+{idP}
+
+DELETE
+________
 Elimina una Actividad en especifico
--> http://localhost:8080/api/actividad/deleteAct/{id}
+-> http://localhost:8080/api/actividades/deleteAct/{id}
 
-Elimina todas las Actividad que ya hayan transcurrido
--> http://localhost:8080/api/actividad/deleteOldAct
+Elimina todas las Actividades que ya hayan transcurrido
+-> http://localhost:8080/api/actividades/deleteOldAct
 
-Elimina todas las Actividad
--> http://localhost:8080/api/actividad/deleteAllAct
+Elimina todas las Actividades
+-> http://localhost:8080/api/actividades/deleteAllAct
 
 
 ////////////----------Reservaciones-------/////////////////
+GET
+_____
 Devuelve todas las Reservaciones
 -> http://localhost:8080/api/reservaciones
 
-Actualiza una Reservacion en especifico
+Devuelve la cantidad de Reservaciones
+-> http://localhost:8080/api/cantidad
+
+PUT
+_____
+Actualiza una Reservacion en especifico----------------RequestBody
 -> http://localhost:8080/api/reservaciones/{id}
 
+DELETE
+_________
 Elimina una Reservacion en especifico
 -> http://localhost:8080/api/reservaciones/deleteReserv/{id}
 
@@ -42,9 +89,13 @@ Elimina todas las Reservaciones que se especifiquen
 
 
 ////////////----------Registro de acciones-------/////////////////
+GET
+_____
 Devuelve todos las Registros
 -> http://localhost:8080/api/registro
 
+DELETE
+________
 Elimina un Registro en especifico
 -> http://localhost:8080/api/registro/eliminarRegId/{id}
 
@@ -52,6 +103,8 @@ Elimina todos las Registros
 -> http://localhost:8080/api/registro/eliminarAllReg
 
 ////////////----------Perfiles-------/////////////////
+GET
+_____
 Devuelve todos los Perfiles
 -> http://localhost:8080/api/perfiles
 
@@ -64,61 +117,37 @@ Devuelve todos los Perfiles que contengan un nombre en especifico
 Devuelve todos los Perfiles que contengan un fragmento del CI especificado
 -> http://localhost:8080/api/perfiles/buscarCI/{CI}
 
-Crea y devuelve un Perfil
+Devuelve todas las actividad add a mis actividades de un perfil
+-> http://localhost:8080/api/perfiles/findAllMisAct/{idP}
+
+Devuelve todas las reservaciones de un perfil
+-> http://localhost:8080/api/perfiles/findAllReservPerf/{idP}
+
+Devuelve la cantidad de reservaciones de un perfil
+-> http://localhost:8080/api/perfiles/cantReservPerf/{idP}
+
+Devuelve cantidad de perfiles
+-> http://localhost:8080/api/perfiles/cantidad
+
+POST
+_____
+Crea y devuelve un Perfil----------------RequestBody
 -> http://localhost:8080/api/perfiles/crearPerfil
 
-Actualiza un Perfil en especifico
+PUT
+_____
+Actualiza un Perfil en especifico----------------RequestBody
 -> http://localhost:8080/api/perfiles/actualizarPerfil/{id}
 
+PATCH
+________
+Agrega las reservaciones a mis actividades de un Perfil en especifico
+-> http://localhost:8080/api/perfiles/addReservAMisAct
+
+DELETE
+________
 Elimina un Perfil en especifico
 -> http://localhost:8080/api/perfiles/deletePerfil/{id}
 
 Elimina todos los Perfiles
 -> http://localhost:8080/api/perfiles/deleteAllAct
-
-////////////----------Datos de las Actividad-------/////////////////
-Devuelve los comentarios de la actividad
--> http://localhost:8080/api/comentario/findAllComentarios/{id}
-
-Devuelve la cantidad de me encanta de la actividad
--> http://localhost:8080/api/comentario/cantMeEncanta/{id}
-
-Devuelve la cantidad de comentarios de la actividad
--> http://localhost:8080/api/comentario/findAllComentarios/{id}
-
-Agrega un comentario del perfil
--> http://localhost:8080/api/comentario/AgregarComentario/{id}+{coment}
-
-Actualiza los comentarios de una actividad
--> http://localhost:8080/api/comentario/CambiarComentario/{id}
-
-Annadir un me encanta de un perfil
-id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
--> http://localhost:8080/api/comentario/addOrDelMeEncanta/{id}+{idP}+{addOrDel}
-
-Agrega o elimina la actividad de Actividad
--> http://localhost:8080/api/comentario/addActMisActiv/{id}+{add}
-
-Validar annadir a mis Act
-id: id de la actividad, idP: id del perfil, addOrDel: valor del boton si esta activado o no
--> http://localhost:8080/api/comentario/addOrDel/{id}+{idP}+{addOrDel}
-
-Si el perfil add o no una actividad
--> http://localhost:8080/api/comentario/addOrDelPerfil/{id}+{idP}
-
-Todas las actividad add a mis actividad de un perfil
--> http://localhost:8080/api/comentario/addAllPerfil/{idP}
-
-////////////----------Mis Actividad-------/////////////////
-Devuelve las MisActividades
--> http://localhost:8080/api/MisActividades
-
-Devuelve las Actividad que esten agregadas a MisActividades del perfil especificado
--> http://localhost:8080/api/MisActividades/{idP}
-
-Devuelve y crea MisActividades de un perfil
--> http://localhost:8080/api/MisActividades/createMisAct
-
-
-
-

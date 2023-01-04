@@ -1,6 +1,5 @@
 package PARY.controller;
 
-import PARY.entity.MisActividades;
 import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
 import PARY.services.contratos.IReservacionService;
@@ -26,6 +25,13 @@ public class ControladorReserv {
         return reserv.findAll();
     }
 
+    /* Devuelve la cantidad de Reservaciones */
+    @GetMapping("/reservaciones/cantidad")
+    @ResponseStatus(HttpStatus.OK)
+    public int cantReserv(){
+        return reserv.findAll().size();
+    }
+
 //-----------------------PutMappings-----------------------------------
 
     /* Actualiza una Reservacion en especifico */
@@ -40,21 +46,21 @@ public class ControladorReserv {
         if(auxReser.isAprobacion() && auxReser.getEstado().equals(Constant_RegAcciones.CAMBIO_ESTADO_N)){
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                     Constant_RegAcciones.APROBACION,
-                    auxReser.getActividades().getNombre());
+                    auxReser.getActividad().getNombre());
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                     Constant_RegAcciones.CAMBIO_ESTADO_N,
-                    auxReser.getActividades().getNombre());
+                    auxReser.getActividad().getNombre());
         }else if (auxReser.isAprobacion() && auxReser.getEstado().equals(Constant_RegAcciones.CAMBIO_ESTADO_P)){
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                     Constant_RegAcciones.APROBACION,
-                    auxReser.getActividades().getNombre());
+                    auxReser.getActividad().getNombre());
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                     Constant_RegAcciones.CAMBIO_ESTADO_P,
-                    auxReser.getActividades().getNombre());
+                    auxReser.getActividad().getNombre());
         }else{
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                     Constant_RegAcciones.CANCELACION,
-                    auxReser.getActividades().getNombre());
+                    auxReser.getActividad().getNombre());
         }
 
 
@@ -69,7 +75,7 @@ public class ControladorReserv {
     public void deleteReserv(@PathVariable long id){
         RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
                 Constant_RegAcciones.ELIMINACION,
-                reserv.findById(id).getActividades().getNombre());
+                reserv.findById(id).getActividad().getNombre());
 
         reserv.deleteById(id);
     }
@@ -80,7 +86,7 @@ public class ControladorReserv {
     public void deleteGroupReserv(@RequestBody List<Reservacion> reser){
         reser.stream().forEach(a->{
             RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, a.getId(),
-                    Constant_RegAcciones.ELIMINACION, a.getActividades().getNombre());
+                    Constant_RegAcciones.ELIMINACION, a.getActividad().getNombre());
         });
         reserv.deleteAll(reser);
     }

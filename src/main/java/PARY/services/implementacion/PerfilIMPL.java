@@ -2,7 +2,6 @@ package PARY.services.implementacion;
 
 import PARY.DAO.IPerfilDAO;
 import PARY.entity.Perfil;
-import PARY.services.contratos.IActividadesService;
 import PARY.services.contratos.IPerfilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class PerfilIMPL extends GenericsImpl<Perfil, IPerfilDAO> implements IPer
     }
 
     @Override
-    public List<Perfil> findPerfilesByCIContains(String CI) {
-        return DAO.findPerfilesByCIContains(CI);
+    public List<Perfil> findPerfilesByCiContains(String CI) {
+        return DAO.findPerfilesByCiContains(CI);
     }
 }

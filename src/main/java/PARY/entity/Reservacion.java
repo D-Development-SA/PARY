@@ -1,11 +1,12 @@
 package PARY.entity;
 
 import PARY.entity.constantes.Constant_Reservaciones;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "reservaciones")
@@ -19,20 +20,21 @@ public class Reservacion implements Serializable {
     @Enumerated(EnumType.STRING)
     private Constant_Reservaciones estado;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "actividades_id")
+    @JsonIgnoreProperties({"cantidad", "reservacion"})
     private Actividad actividad;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name = "perfilReser", joinColumns = @JoinColumn(name = "reservacion_id"),
             inverseJoinColumns = @JoinColumn(name = "perfil_id"))
-    private List<Perfil> perfil;
+    private Set<Perfil> perfil;
 
     public Reservacion() {
     }
 
     public Reservacion(long id, boolean aprobacion, String fechaHora, Constant_Reservaciones estado,
-                       Actividad actividad, List<Perfil> perfil) {
+                       Actividad actividad, Set<Perfil> perfil) {
         this.id = id;
         this.aprobacion = aprobacion;
         this.fechaHora = fechaHora;
@@ -74,19 +76,19 @@ public class Reservacion implements Serializable {
         this.fechaHora = fechaHora;
     }
 
-    public Actividad getActividades() {
+    public Actividad getActividad() {
         return actividad;
     }
 
-    public void setActividades(Actividad actividad) {
+    public void setActividad(Actividad actividad) {
         this.actividad = actividad;
     }
 
-    public List<Perfil> getPerfil() {
+    public Set<Perfil> getPerfil() {
         return perfil;
     }
 
-    public void setPerfil(List<Perfil> perfil) {
+    public void setPerfil(Set<Perfil> perfil) {
         this.perfil = perfil;
     }
 

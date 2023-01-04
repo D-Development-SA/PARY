@@ -1,13 +1,13 @@
 package PARY.entity.pktAct;
 
 import jakarta.persistence.*;
-
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "reacciones")
-public class Reaccion {
+public class Reaccion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -17,20 +17,24 @@ public class Reaccion {
     private String nombreP;
     private boolean valMeEncanta;
     private boolean valAddMisActividades;
+    private boolean valReser;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(foreignKey = @ForeignKey(name = "FK_REACCIONCOMENTARIO_ID"))
     private List<Comentario> comentarios;
 
     public Reaccion() {
     }
 
-    public Reaccion(Long id, Long idPerfil, String apellidoP, String nombreP, boolean valMeEncanta, boolean valAddMisActividades, List<Comentario> comentarios) {
+    public Reaccion(Long id, Long idPerfil, String apellidoP, String nombreP, boolean valMeEncanta,
+                    boolean valAddMisActividades, boolean valReser, List<Comentario> comentarios) {
         this.id = id;
         this.idPerfil = idPerfil;
         this.apellidoP = apellidoP;
         this.nombreP = nombreP;
         this.valMeEncanta = valMeEncanta;
         this.valAddMisActividades = valAddMisActividades;
+        this.valReser = valReser;
         this.comentarios = comentarios;
     }
 
@@ -90,16 +94,24 @@ public class Reaccion {
         this.comentarios = comentarios;
     }
 
+    public boolean isValReser() {
+        return valReser;
+    }
+
+    public void setValReser(boolean valReser) {
+        this.valReser = valReser;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reaccion reaccion = (Reaccion) o;
-        return valMeEncanta == reaccion.valMeEncanta && valAddMisActividades == reaccion.valAddMisActividades && id.equals(reaccion.id) && idPerfil.equals(reaccion.idPerfil) && Objects.equals(apellidoP, reaccion.apellidoP) && nombreP.equals(reaccion.nombreP);
+        return id.equals(reaccion.id) && idPerfil.equals(reaccion.idPerfil) && Objects.equals(comentarios, reaccion.comentarios);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idPerfil, apellidoP, nombreP, valMeEncanta, valAddMisActividades);
+        return Objects.hash(id, idPerfil, comentarios);
     }
 }

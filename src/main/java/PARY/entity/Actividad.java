@@ -2,10 +2,9 @@ package PARY.entity;
 
 import PARY.entity.constantes.Constant_Act;
 import PARY.entity.pktAct.Cantidad;
-import PARY.entity.pktAct.Reaccion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,28 +26,28 @@ public class Actividad implements Serializable {
     @Enumerated(EnumType.STRING)
     private Constant_Act tipoAct;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Direccion direccion;
 
     @OneToMany(mappedBy = "actividad", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"actividad"})
     private List<Reservacion> reservacion;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn
-    private List<Reaccion> reaccions;
-
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Cantidad cantidad;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "perfil_id", foreignKey = @ForeignKey(name = "FK_PERFIL_ACTIVIDAD_ID"))
+    @JsonIgnore
+    private Perfil perfil;
 
     public Actividad() {
     }
 
     public Actividad(long id, String nombre, double precio, String info, String fechaHora,
                      Constant_Act tipoAct, Direccion direccion, List<Reservacion> reservacion,
-                     List<Reaccion> reaccions, Cantidad cantidad) {
+                     Cantidad cantidad) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
@@ -57,7 +56,6 @@ public class Actividad implements Serializable {
         this.tipoAct = tipoAct;
         this.direccion = direccion;
         this.reservacion = reservacion;
-        this.reaccions = reaccions;
         this.cantidad = cantidad;
     }
 
@@ -125,19 +123,19 @@ public class Actividad implements Serializable {
         this.reservacion = reservacion;
     }
 
-    public List<Reaccion> getReaccions() {
-        return reaccions;
-    }
-
-    public void setReaccions(List<Reaccion> reaccions) {
-        this.reaccions = reaccions;
-    }
-
-    public Cantidad getCantidades() {
+    public Cantidad getCantidad() {
         return cantidad;
     }
 
-    public void setCantidades(Cantidad cantidad) {
+    public void setCantidad(Cantidad cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public Perfil getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
     }
 }

@@ -8,18 +8,19 @@ import java.util.Objects;
 @Entity
 @Table(name = "autenticaciones")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Autenticacion implements Serializable {
+public
+abstract class Autenticacion implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, length = 10, unique = true)
-    private String Usuario;
-    @Column(nullable = false, length = 20, unique = true)
-    private String Contrasenna;
-    @Column(nullable = false, length = 10, unique = true)
-    private String NumTel;
-    @Column(nullable = false, length = 6, unique = true)
+    @Column(length = 10, unique = true)
+    private String usuario;
+    @Column(length = 20, unique = true)
+    private String contrasenna;
+    @Column(length = 10, unique = true)
+    private String numTel;
+    @Column(length = 6, unique = true)
     private String codigoToken;
 
     public Autenticacion() {
@@ -27,9 +28,9 @@ public abstract class Autenticacion implements Serializable {
 
     public Autenticacion(long id, String usuario, String contrasenna, String numTel, String codigoToken) {
         this.id = id;
-        Usuario = usuario;
-        Contrasenna = contrasenna;
-        NumTel = numTel;
+        this.usuario = usuario;
+        this.contrasenna = contrasenna;
+        this.numTel = numTel;
         this.codigoToken = codigoToken;
     }
 
@@ -42,27 +43,27 @@ public abstract class Autenticacion implements Serializable {
     }
 
     public String getUsuario() {
-        return Usuario;
+        return usuario;
     }
 
     public void setUsuario(String usuario) {
-        Usuario = usuario;
+        this.usuario = usuario;
     }
 
     public String getContrasenna() {
-        return Contrasenna;
+        return contrasenna;
     }
 
     public void setContrasenna(String contrasenna) {
-        Contrasenna = contrasenna;
+        this.contrasenna = contrasenna;
     }
 
     public String getNumTel() {
-        return NumTel;
+        return numTel;
     }
 
     public void setNumTel(String numTel) {
-        NumTel = numTel;
+        this.numTel = numTel;
     }
 
     public String getCodigoToken() {
@@ -78,11 +79,11 @@ public abstract class Autenticacion implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Autenticacion autenticacion = (Autenticacion) o;
-        return id == autenticacion.id && Usuario.equals(autenticacion.Usuario) && NumTel.equals(autenticacion.NumTel);
+        return id == autenticacion.id && usuario.equals(autenticacion.usuario) && numTel.equals(autenticacion.numTel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, Usuario, NumTel);
+        return Objects.hash(id, usuario, numTel);
     }
 }

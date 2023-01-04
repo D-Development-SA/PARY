@@ -4,7 +4,6 @@ import PARY.entity.Actividad;
 import PARY.entity.Perfil;
 import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
-import PARY.entity.constantes.Constant_Reservaciones;
 import PARY.services.contratos.IPerfilService;
 import PARY.services.implementacion.RegistroAccionIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -43,10 +43,38 @@ public class ControladorPerfil {
     }
 
     /* Devuelve todos los Perfiles que contengan un fragmento del CI especificado */
-    @GetMapping("/Perfil//perfiles/buscarCI/{CI}")
+    @GetMapping("/perfiles/buscarCI/{CI}")
     @ResponseStatus(HttpStatus.OK)
     public List<Perfil> findByCI(@PathVariable String CI){
-        return perfil.findPerfilesByCIContains(CI);
+        return perfil.findPerfilesByCiContains(CI);
+    }
+
+    /* Devuelve todas las actividad add a mis actividades de un perfil */
+    @GetMapping("/perfiles/findAllMisAct/{idP}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<Actividad> findAllMisAct(@PathVariable long idP) {
+        return perfil.findById(idP).getMisActividades();
+    }
+
+    /* Devuelve todas las reservaciones de un perfil */
+    @GetMapping("/perfiles/findAllReservPerf/{idP}")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<Reservacion> findAllReservPerf(@PathVariable long idP) {
+        return perfil.findById(idP).getReservacion();
+    }
+
+    /* Devuelve la cantidad de reservaciones de un perfil */
+    @GetMapping("/perfiles/cantReservPerf/{idP}")
+    @ResponseStatus(HttpStatus.OK)
+    public int cantReservPerf(@PathVariable long idP){
+        return perfil.findById(idP).getReservacion().size();
+    }
+
+    /* Devuelve cantidad de perfiles */
+    @GetMapping("/perfiles/cantidad")
+    @ResponseStatus(HttpStatus.OK)
+    public int cantPerf(){
+        return perfil.findAll().size();
     }
 
 //-----------------------PostMappings-----------------------------------
@@ -65,8 +93,8 @@ public class ControladorPerfil {
 
 //-----------------------PutMappings-----------------------------------
 
-    /* Actualiza un Perfil en especifico y crea una reservacion si el param reser = true */
-    @PutMapping("/actividades/actualizarAct/{id}")
+    /* Actualiza un Perfil en especifico */
+    @PutMapping("/perfiles/actualizarPerfil/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public Perfil updatePerfil(@RequestBody Perfil perfill, @PathVariable long id){
         Perfil auxP = perfil.findById(id);
@@ -79,11 +107,22 @@ public class ControladorPerfil {
         auxP.setReservacion(perfill.getReservacion());
         auxP.setNombre(perfill.getNombre());
         auxP.setContrasenna(perfill.getContrasenna());
-        auxP.setCI(perfill.getCI());
+        auxP.setCi(perfill.getCi());
         auxP.setApellidos(perfill.getApellidos());
         auxP.setMisActividades(perfill.getMisActividades());
 
         return perfil.save(auxP);
+    }
+
+//-----------------------PatchMappings-----------------------------------
+    /* Agrega las reservaciones a mis actividades de un Perfil en especifico */
+    @PatchMapping("/perfiles/addReservAMisAct")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Perfil addReservAMisAct(@PathVariable long id){
+        Perfil perfil = findPerfilById(id);
+        if (!perfil.getReservacion().isEmpty())
+            perfil.getReservacion().forEach(reservacion -> perfil.getMisActividades().add(reservacion.getActividad()));
+        return perfil;
     }
 //-----------------------DeleteMappings-----------------------------------
 
