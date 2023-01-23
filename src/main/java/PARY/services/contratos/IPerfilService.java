@@ -1,5 +1,6 @@
 package PARY.services.contratos;
 
+import PARY.entity.Direccion;
 import PARY.entity.Perfil;
 
 import java.util.List;

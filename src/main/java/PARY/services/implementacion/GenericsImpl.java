@@ -28,6 +28,11 @@ public class GenericsImpl <E, D extends CrudRepository<E, Long>> implements IGen
     }
 
     @Override
+    public List<E> saveAll(List<E> actividad) {
+        return (List<E>)DAO.saveAll(actividad);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public E findById(long id) {
         return DAO.findById(id).orElse(null);

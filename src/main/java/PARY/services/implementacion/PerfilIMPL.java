@@ -1,6 +1,7 @@
 package PARY.services.implementacion;
 
 import PARY.DAO.IPerfilDAO;
+import PARY.entity.Direccion;
 import PARY.entity.Perfil;
 import PARY.services.contratos.IPerfilService;
 import org.springframework.beans.factory.annotation.Autowired;

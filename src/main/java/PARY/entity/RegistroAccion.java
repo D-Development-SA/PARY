@@ -19,19 +19,19 @@ public class RegistroAccion implements Serializable {
     private long idTipo;
     private String tipo;    //Tipo: Actividad o Reservacion
     private String nombreAct_Reserv;
-    @Column(nullable = false, length = 13)
+    @Column(nullable = false)
     private String accion;
     @Column(nullable = false)
     private String fechaHora;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "perfil_id", foreignKey = @ForeignKey(name = "FK_PERFIL_ID2"))
     private Perfil perfil;
 
     public RegistroAccion() {
     }
 
-    public RegistroAccion(long id, long idTipo, String tipo, String nombreAct_Reserv, Constant_RegAcciones accion, String fechaHora, Perfil perfil) {
+    public RegistroAccion(long id, long idTipo, String tipo, String nombreAct_Reserv, String accion, String fechaHora, Perfil perfil) {
         this.id = id;
         this.idTipo = idTipo;
         this.tipo = tipo;
@@ -41,7 +41,7 @@ public class RegistroAccion implements Serializable {
         this.perfil = perfil;
     }
 
-    public RegistroAccion(long idTipo, String tipo, Constant_RegAcciones accion, String nombreAct_Reserv) {
+    public RegistroAccion(long idTipo, String tipo, String accion, String nombreAct_Reserv) {
         this.idTipo = idTipo;
         this.tipo = tipo;
         this.accion = String.valueOf(accion);

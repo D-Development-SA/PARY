@@ -3,6 +3,7 @@ package PARY.entity.pktAct;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cantidades")
@@ -74,5 +75,18 @@ public class Cantidad implements Serializable {
 
     public void setReaccions(List<Reaccion> reaccions) {
         this.reaccions = reaccions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cantidad cantidad = (Cantidad) o;
+        return cantReserv == cantidad.cantReserv && cantComent == cantidad.cantComent && cantMeEncanta == cantidad.cantMeEncanta && id.equals(cantidad.id) && Objects.equals(reaccions, cantidad.reaccions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cantReserv, cantComent, cantMeEncanta, reaccions);
     }
 }

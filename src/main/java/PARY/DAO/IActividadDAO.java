@@ -10,4 +10,6 @@ public interface IActividadDAO extends CrudRepository<Actividad,Long> {
     List<Actividad> findActividadesByNombreContains(String nombre);
 
     List<Actividad> findActividadesByOrderByFechaHoraDesc();
+
+    List<Actividad> findActividadesByNombreContainsOrderByFechaHoraDesc(String nombre);
 }

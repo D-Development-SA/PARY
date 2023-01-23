@@ -1,17 +1,21 @@
 package PARY.controller;
 
 import PARY.entity.Actividad;
+import PARY.entity.Notificacion;
 import PARY.entity.Perfil;
 import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
+import PARY.entity.pktNotifi_Reg.RegProp;
 import PARY.services.contratos.IPerfilService;
 import PARY.services.implementacion.RegistroAccionIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +36,11 @@ public class ControladorPerfil {
     @GetMapping("/perfiles/buscarID/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Perfil findPerfilById(@PathVariable Long id){
-        return perfil.findById(id);
+        Perfil perfilAux = perfil.findById(id);
+
+        perfilAux.getNotificacion()
+                .sort(Comparator.comparing(Notificacion::getId, Comparator.reverseOrder()));
+        return perfilAux;
     }
 
     /* Devuelve todas las Perfil que contengan un nombre en especifico */
@@ -85,8 +93,8 @@ public class ControladorPerfil {
     public Perfil createPerfil(@RequestBody Perfil perfill){
         Perfil aux = perfil.save(perfill);
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_PERFIL, aux.getId(),
-                Constant_RegAcciones.CREACION, aux.getNombre());
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, aux.getId(),
+                Constant_RegAcciones.CREACION.name(), aux.getNombre());
 
         return aux;
     }
@@ -100,8 +108,8 @@ public class ControladorPerfil {
         Perfil auxP = perfil.findById(id);
         String nombre = auxP.getNombre();
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id,
-                Constant_RegAcciones.ACTUALIZACION,
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, id,
+                Constant_RegAcciones.ACTUALIZACION.name(),
                 nombre+"->"+ auxP.getNombre());
 
         auxP.setReservacion(perfill.getReservacion());
@@ -121,8 +129,34 @@ public class ControladorPerfil {
     public Perfil addReservAMisAct(@PathVariable long id){
         Perfil perfil = findPerfilById(id);
         if (!perfil.getReservacion().isEmpty())
-            perfil.getReservacion().forEach(reservacion -> perfil.getMisActividades().add(reservacion.getActividad()));
+            perfil.getReservacion().forEach(reservacion -> {
+                perfil.getMisActividades().add(reservacion.getActividad());
+
+                RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, perfil.getId(),
+                        Constant_RegAcciones.CREACION.name() + "-MisActividades"+ reservacion.getActividad().getNombre(),
+                        perfil.getNombre());
+
+            });
         return perfil;
+    }
+
+    /* Vio la notificaion un Perfil especifico */
+    @PatchMapping("/perfiles/VioNotif/{idP}+{idN}+{bool}")
+    @ResponseStatus(HttpStatus.OK)
+    public void vioNotif(@PathVariable long idP, @PathVariable long idN){
+        Perfil perfil = findPerfilById(idP);
+        perfil.getNotificacion().stream().parallel()
+                .filter(notificacion -> notificacion.getId().equals(idN))
+                .forEach(notificacion -> notificacion.setVisto(true));
+    }
+
+    /* Desactiva una notificacion de que no es nueva de un Perfil en especifico */
+    @PatchMapping("/perfiles/desactNuevaNotif/{idP}")
+    @ResponseStatus(HttpStatus.OK)
+    public void desactNuevaNotif(@PathVariable long idP){
+        Perfil perfil = findPerfilById(idP);
+        perfil.getNotificacion().stream().parallel()
+                .forEach(notificacion -> notificacion.setNueva(false));
     }
 //-----------------------DeleteMappings-----------------------------------
 
@@ -132,18 +166,18 @@ public class ControladorPerfil {
     public void deletePerfil(@PathVariable Long id){
         Perfil aux = perfil.findById(id);
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id,
-                Constant_RegAcciones.ELIMINACION, aux.getNombre());
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, id,
+                Constant_RegAcciones.ELIMINACION.name(), aux.getNombre());
 
         perfil.deleteById(id);
     }
 
     /* Elimina todas los Perfiles */
-    @DeleteMapping("/perfiles/deleteAllAct")
+    @DeleteMapping("/perfiles/deleteAllPerfil")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAllPerfil(){
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, -1,
-                Constant_RegAcciones.ELIMINACION, "deleteAll");
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, -1,
+                Constant_RegAcciones.ELIMINACION.name(), "deleteAll");
         perfil.deleteAll();
     }
 

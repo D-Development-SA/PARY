@@ -1,5 +1,6 @@
 package PARY.DAO;
 
+import PARY.entity.Direccion;
 import PARY.entity.Perfil;
 import org.springframework.data.repository.CrudRepository;
 

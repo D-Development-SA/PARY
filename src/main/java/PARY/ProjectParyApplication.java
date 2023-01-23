@@ -1,6 +1,7 @@
 package PARY;
 
 import PARY.entity.Reservacion;
+import PARY.hilos.EventCadaHora;
 import PARY.services.contratos.IReservacionService;
 import PARY.services.implementacion.ReservacionIMPL;
 import org.springframework.beans.factory.annotation.Autowired;

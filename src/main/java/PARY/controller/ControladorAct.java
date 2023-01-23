@@ -6,17 +6,19 @@ import PARY.entity.constantes.Constant_RegAcciones;
 import PARY.entity.constantes.Constant_Reservaciones;
 import PARY.entity.pktAct.Comentario;
 import PARY.entity.pktAct.Reaccion;
+import PARY.entity.pktNotifi_Reg.RegProp;
+import PARY.entity.pktNotifi_Reg.notifiProp;
+import PARY.hilos.*;
 import PARY.services.contratos.IActividadesService;
+import PARY.services.contratos.ICantidadService;
 import PARY.services.contratos.IPerfilService;
+import PARY.services.implementacion.NotificacionIMPL;
 import PARY.services.implementacion.RegistroAccionIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,14 +29,27 @@ public class ControladorAct {
     private IActividadesService act;
     @Autowired
     private IPerfilService perfilService;
+    @Autowired
+    private ICantidadService cantidadService;
 
-//-----------------------GetMappings-----------------------------------
+    private HashMap<Thread, IHiloCentral> hashMap = new HashMap<>();
+    private String[] nameHilos = {"EventCadaHora","delOldAct","ReservAgotad"};
+    private boolean bool = true;
+
+    //-----------------------GetMappings-----------------------------------
 
     /* Devuelve todas las Actividades */
     @GetMapping("/actividades")
     @ResponseStatus(HttpStatus.OK)
     public List<Actividad> findAllAct() {
         return act.findAll();
+    }
+
+    /* Devuelve todas las Actividades de una localidad */
+    @GetMapping("/actividades/{provincia}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Actividad> findAllActProvincia(@PathVariable String provincia) {
+        return act.findActividadesByProvinciaOrdenadas(provincia);
     }
 
     /* Devuelve una Actividad en especifico */
@@ -116,10 +131,18 @@ public class ControladorAct {
     @PostMapping("/actividades/crearAct")
     @ResponseStatus(HttpStatus.CREATED)
     public Actividad createAct(@RequestBody Actividad Actividad) {
+        long id = NotificacionIMPL.crearNotifi();
         Actividad aux = act.save(Actividad);
+        notifCrearAct notifCrearAct = new notifCrearAct();
+        notifCrearAct.setAux(aux);
+        notifCrearAct.setPerfilService(perfilService);
+        notifCrearAct.setId(id);
+        Thread thread = new Thread(notifCrearAct, "Notificador");
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, aux.getId(),
-                Constant_RegAcciones.CREACION, aux.getNombre());
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, aux.getId(),
+                Constant_RegAcciones.CREACION.name(), aux.getNombre());
+
+        thread.start();
 
         return aux;
     }
@@ -130,12 +153,23 @@ public class ControladorAct {
     @PutMapping("/actividades/actualizarAct/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public Actividad updateAct(@RequestBody Actividad Actividad, @PathVariable long id) {
+        long idN = NotificacionIMPL.crearNotifi();
+
         Actividad auxAct = act.findById(id);
         String nombre = auxAct.getNombre();
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id,
-                Constant_RegAcciones.ACTUALIZACION,
+        NotifupdateAct notifupdateAct = new NotifupdateAct();
+        notifupdateAct.setAuxAct(auxAct);
+        notifupdateAct.setPerfils(new ArrayList<>());
+        notifupdateAct.setActividad(Actividad);
+        notifupdateAct.setId(idN);
+        Thread thread = new Thread(notifupdateAct);
+
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, id,
+                Constant_RegAcciones.ACTUALIZACION.name(),
                 nombre + "->" + Actividad.getNombre());
+
+        thread.start();
 
         auxAct.setReservacion(Actividad.getReservacion());
         auxAct.setCantidad(Actividad.getCantidad());
@@ -185,7 +219,10 @@ public class ControladorAct {
 
         a.getCantidad().setCantComent(a.getCantidad().getCantComent() + 1);
 
-        System.out.println(a.getCantidad().getReaccions().size());
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, id,
+                Constant_RegAcciones.CREACION.name() + "-Comentario",
+                a.getNombre());
+
         //No pueden existir comentarios duplicados
         return act.save(a);
     }
@@ -225,6 +262,10 @@ public class ControladorAct {
                 }
             }
         }
+
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, id,
+                Constant_RegAcciones.ACTUALIZACION.name() + "-Comentario",
+                aux.getNombre());
 
         return act.save(aux);
     }
@@ -267,9 +308,19 @@ public class ControladorAct {
                     perfil.getMisActividades()
                             .removeIf(misActividades1 -> misActividades1.equals(actividad));
                     reaccion.setValAddMisActividades(add);
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, idP,
+                            Constant_RegAcciones.ELIMINACION.name() + "-MisActividades"+ actividad.getNombre(),
+                            perfil.getNombre());
+
                 } else if (!reaccion.isValAddMisActividades() && add) {
                     reaccion.setValAddMisActividades(add);
                     perfil.getMisActividades().add(actividad);
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, idP,
+                            Constant_RegAcciones.CREACION.name() + "-MisActividades"+ actividad.getNombre(),
+                            perfil.getNombre());
+
                 }
             }
         });
@@ -281,6 +332,11 @@ public class ControladorAct {
             reac.setValAddMisActividades(add);
             actividad.getCantidad().getReaccions().add(reac);
             perfil.getMisActividades().add(actividad);
+
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_PERFIL, idP,
+                    Constant_RegAcciones.CREACION.name() + "-MisActividades"+ actividad.getNombre(),
+                    perfil.getNombre());
+
         }
 
         act.save(actividad);
@@ -296,55 +352,123 @@ public class ControladorAct {
         AtomicBoolean val = new AtomicBoolean(true);
         Perfil perfil = perfilService.findById(idP);
 
-        System.out.println("comienza");
-        System.out.println(auxAct.getCantidad().getReaccions().size());
         //Crea o quita la reservacion si el perfil ya reacciono
         auxAct.getCantidad().getReaccions().stream().forEach(reaccion -> {
-            System.out.println("entro al foreach");
             if (reaccion.getIdPerfil() == idP) {
-                System.out.println("encontro el perfil");
                 val.set(false);
                 if (reaccion.isValReser() && !reserv) {
-                    System.out.println("entro al primer if");
                     perfil.getReservacion().removeIf(reservacion -> {
                         if(reservacion.getActividad().equals(auxAct)){
                             reservacion.getPerfil().removeIf(perfil1 -> perfil1.equals(perfil));
+
+                            //--------------NOTIFICACION----------------------
+                            NotificacionIMPL.crearNotifiPersonal(notifiProp.notifi[notifiProp.RESER_ELIM],
+                                    notifiProp.crearInfo(auxAct.getNombre(), notifiProp.RESER_ELIM),
+                                    perfil, auxAct, NotificacionIMPL.crearNotifi());
+
+                            RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                                    Constant_RegAcciones.ELIMINACION.name() + auxAct.getNombre(),
+                                    perfil.getNombre());
+
                             return true;
                         };
                         return false;
                     });
                     auxAct.getCantidad().setCantReserv(auxAct.getCantidad().getCantReserv() - 1);
                     reaccion.setValReser(reserv);
-                    System.out.println("salio al primer if");
                 } else if (!reaccion.isValReser() && reserv) {
-                    System.out.println("entro al segundo if");
                     addReser(reserv, auxAct, perfil, reaccion);
                     auxAct.getCantidad().setCantReserv(auxAct.getCantidad().getCantReserv() + 1);
-                    System.out.println("salio al segundo if");
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                            Constant_RegAcciones.CREACION.name() + auxAct.getNombre(),
+                            perfil.getNombre());
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                            Constant_RegAcciones.ESTADO_PENDIENTE + auxAct.getNombre(),
+                            perfil.getNombre());
+
                 }
             }
         });
 
         //Si no ha reaccionado crea la reaccion y reserva
         if (val.get()) {
-            System.out.println("entro al tercer if");
             Reaccion reaccion = addReaccionAAct(perfil);
             auxAct.getCantidad().getReaccions().add(reaccion);
             addReser(reserv, auxAct, perfil, reaccion);
             if (reserv) auxAct.getCantidad().setCantReserv(auxAct.getCantidad().getCantReserv() + 1);
-            System.out.println("salio al tercer if");
+
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                    Constant_RegAcciones.CREACION.name() + auxAct.getNombre(),
+                    perfil.getNombre());
+
         }
 
         Actividad aux = act.save(auxAct);
         Perfil perfAux = perfilService.save(perfil);
 
-        if (reserv) RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION,
-                aux.getReservacion().get(aux.getReservacion().size() - 1).getId(),
-                Constant_RegAcciones.RESERVACION, aux.getNombre());
-
-        System.out.println("se acabo");
         return perfAux;
     }
+
+    /* Aprobar una reservacion de un perfil */
+    @PatchMapping("/actividades/aprobarReser/{id}+{aprobar}+{idP}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Perfil aprobarReser(@PathVariable long id,
+                             @PathVariable boolean aprobar, @PathVariable long idP) {
+        Actividad auxAct = act.findById(id);
+        Perfil perfil = perfilService.findById(idP);
+
+        //Crea o quita la reservacion si el perfil ya reacciono
+        auxAct.getCantidad().getReaccions().stream().forEach(reaccion -> {
+            if (reaccion.getIdPerfil() == idP) {
+
+                if (reaccion.isValReser() && aprobar) {
+                    perfil.getReservacion().stream()
+                            .filter(reservacion -> reservacion.getActividad().equals(auxAct))
+                            .forEach(reservacion -> reservacion.setAprobacion(aprobar));
+
+                    //--------------NOTIFICACION----------------------
+                    NotificacionIMPL.crearNotifiPersonal(notifiProp.notifi[notifiProp.RESER_ACEPT],
+                                    notifiProp.crearInfo(auxAct.getNombre(), notifiProp.RESER_ACEPT),
+                                    perfil, auxAct, NotificacionIMPL.crearNotifi());
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                            Constant_RegAcciones.ESTADO_HECHA.name() + auxAct.getNombre(),
+                            perfil.getNombre());
+
+                } else if (reaccion.isValReser() && !aprobar) {
+                    perfil.getReservacion().stream()
+                            .filter(reservacion -> reservacion.getActividad().equals(auxAct))
+                            .forEach(reservacion -> reservacion.setAprobacion(aprobar));
+
+                    //--------------NOTIFICACION----------------------
+                    NotificacionIMPL.crearNotifiPersonal(notifiProp.notifi[notifiProp.RESER_ANUL],
+                                    notifiProp.crearInfo(auxAct.getNombre(), notifiProp.RESER_ANUL),
+                                    perfil, auxAct, NotificacionIMPL.crearNotifi());
+
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, idP,
+                            Constant_RegAcciones.CANCELACION.name() + auxAct.getNombre(),
+                            perfil.getNombre());
+
+                }
+
+            }
+        });
+
+        return perfilService.save(perfil);
+    }
+
+    /* Notificar de un nuevo evento */
+    @PatchMapping("/actividades/nuevoEvent/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void nuevoEvent(@PathVariable long id){
+        Actividad actividad = act.findById(id);
+        NotificacionIMPL.crearNotifiGlobal(notifiProp.notifi[notifiProp.EVENT_NUEVO],
+                notifiProp.crearInfo(actividad.getNombre(), notifiProp.EVENT_NUEVO),
+                perfilService.findAll(),actividad, NotificacionIMPL.crearNotifi());
+    }
+
 
 //-----------------------DeleteMappings-----------------------------------
 
@@ -353,17 +477,25 @@ public class ControladorAct {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAct(@PathVariable Long id) {
         Actividad aux = findActById(id);
+        List<Perfil> perfils = perfilService.findAll();
 
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, id,
-                Constant_RegAcciones.ELIMINACION, aux.getNombre());
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, id,
+                Constant_RegAcciones.ELIMINACION.name(), aux.getNombre());
 
         if (aux.getReservacion() != null) {
             for (Reservacion r :
                     aux.getReservacion()) {
-                RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, r.getId(),
-                        Constant_RegAcciones.ELIMINACION, aux.getNombre());
+                RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, id,
+                        Constant_RegAcciones.ELIMINACION.name(), aux.getNombre());
             }
         }
+
+        NotificacionIMPL.EliminarNotiAct(aux)
+                .forEach(idN -> perfils.forEach(perfil -> perfil.getNotificacion()
+                        .removeIf(notificacion -> notificacion.getId().equals(idN))
+                ));
+
+        perfilService.saveAll(perfils);
         act.deleteById(id);
     }
 
@@ -378,8 +510,18 @@ public class ControladorAct {
     @DeleteMapping("/actividades/deleteAllAct")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAllAct() {
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD, -1,
-                Constant_RegAcciones.ELIMINACION, "deleteAll");
+        List<Perfil> perfils = perfilService.findAll();
+
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, -1,
+                Constant_RegAcciones.ELIMINACION.name(), "deleteAll");
+
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, -1,
+                Constant_RegAcciones.ELIMINACION.name(), "deleteAll");
+
+        perfils.forEach(perfil -> perfil.getNotificacion().clear());
+
+        perfilService.saveAll(perfils);
+        NotificacionIMPL.EliminarNotiAct();
         act.deleteAll();
     }
 
@@ -388,9 +530,19 @@ public class ControladorAct {
         if (reaccion.isValMeEncanta() && !add) {
             actividad.getCantidad().setCantMeEncanta(actividad.getCantidad().getCantMeEncanta() - 1);
             reaccion.setValMeEncanta(add);
+
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, actividad.getId(),
+                    Constant_RegAcciones.REACCION_ELIM.name(),
+                    actividad.getNombre());
+
         } else if (!reaccion.isValMeEncanta() && add) {
             actividad.getCantidad().setCantMeEncanta(actividad.getCantidad().getCantMeEncanta() + 1);
             reaccion.setValMeEncanta(add);
+
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD, actividad.getId(),
+                    Constant_RegAcciones.REACCION_ADD.name(),
+                    actividad.getNombre());
+
         }
     }
 
@@ -431,4 +583,90 @@ public class ControladorAct {
         r.getPerfil().add(perfil);
         perfil.getReservacion().add(r);
     }
+
+    //-------------------------------------------------
+    //Activar hilos
+    @GetMapping("/activarHilos")
+    public void activarHilos(){
+        if(bool){
+            List<IHiloCentral> hiloCentralList = new ArrayList<>();
+
+            hiloCentralList.add(new EventCadaHora(act, perfilService));
+            hiloCentralList.add(new delOldAct(act, perfilService));
+            hiloCentralList.add(new ReservAgotad(cantidadService, act, perfilService));
+
+            hiloCentralList.forEach(hiloCentral -> hashMap.put(new Thread(hiloCentral), hiloCentral));
+
+            bool = false;
+        }
+        AtomicInteger i = new AtomicInteger(0);
+        hashMap.forEach((threads, hiloCentral) -> {
+            if(!threads.isAlive())threads.start();
+            if(threads != null && i.get() != -1)threads.setName(nameHilos[i.getAndIncrement()]);
+        });
+        i.set(-1);
+    }
+
+    //Desactivar hilos
+    @GetMapping("/desactivarHilos")
+    public void desactivarHilos(){
+        HiloCentral.StopAll();
+
+        hashMap.forEach((thread, hiloCentral) ->{
+            if(thread.isAlive())thread.interrupt();
+            if(thread.getName().equals("EventCadaHora") && ((EventCadaHora)hiloCentral).getThread().isAlive())((EventCadaHora)hiloCentral).getThread().interrupt();
+            }
+        );
+        infoHilos();
+
+    }
+
+    @GetMapping("/detenerHilo/{name}")
+    public void detenerHilo(@PathVariable String name){
+         hashMap.forEach((thread, hiloCentral) -> {
+             if(thread.getName().equals(name)) hiloCentral.setDetenerHilo();
+             if(thread.getName().equals("EventCadaHora"))((EventCadaHora)hiloCentral).getThread().interrupt();
+             thread.interrupt();
+         }) ;
+         infoHilos();
+    }
+
+    @GetMapping("/infoHilos")
+    void infoHilos(){
+        int j = hashMap.size()+1;
+        AtomicInteger i = new AtomicInteger(0);
+
+        hashMap.forEach((thread, hiloCentral) -> {
+            if (thread.isAlive()) {
+                System.out.println(thread.getName() + " -> Corriendo");
+                if (thread.getName().equals("EventCadaHora")) {
+                    System.out.println(((EventCadaHora) hiloCentral).getThread().getName() + " -> Corriendo");
+                    i.getAndIncrement();
+                }
+                i.getAndIncrement();
+            }
+        });
+
+        System.out.println("/////////////////////////////////");
+        System.out.println(i + "/" + j + " Hilos Corriendo");
+        System.out.println("/////////////////////////////////");
+
+        i.set(0);
+
+        hashMap.forEach((thread, hiloCentral) ->{
+            if(!thread.isAlive()){
+                System.out.println(thread.getName() + " -> Apagado");
+                if (thread.getName().equals("EventCadaHora") && !((EventCadaHora) hiloCentral).getThread().isAlive()) {
+                    System.out.println(((EventCadaHora) hiloCentral).getThread().getName() + " -> Apagado");
+                    i.getAndIncrement();
+                }
+                i.getAndIncrement();
+            }
+        });
+
+        System.out.println("/////////////////////////////////");
+        System.out.println(i + "/" + j + " Hilos apagados");
+        System.out.println("/////////////////////////////////");
+    }
+
 }

@@ -4,6 +4,9 @@ ____
 Devuelve todas las Actividad
 -> http://localhost:8080/api/actividades
 
+Devuelve todas las Actividades de una localidad
+-> http://localhost:8080/api/actividades/{provincia}
+
 Devuelve una Actividad en especifico
 -> http://localhost:8080/api/actividades/buscarID/{id}
 
@@ -52,6 +55,9 @@ Agrega o elimina la actividad de MisActividades
 
 Crea una reservacion si el param reser = true
 -> http://localhost:8080/api/actividades/creaReser/{id}+{reserv}+{idP}
+
+Aprobar una reservacion de un perfil
+-> http://localhost:8080/api/actividades/creaReser/{id}+{aprobar}+{idP}
 
 DELETE
 ________
@@ -150,4 +156,4 @@ Elimina un Perfil en especifico
 -> http://localhost:8080/api/perfiles/deletePerfil/{id}
 
 Elimina todos los Perfiles
--> http://localhost:8080/api/perfiles/deleteAllAct
+-> http://localhost:8080/api/perfiles/deleteAllPerfil

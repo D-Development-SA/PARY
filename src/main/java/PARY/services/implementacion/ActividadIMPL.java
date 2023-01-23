@@ -4,6 +4,7 @@ import PARY.DAO.IActividadDAO;
 import PARY.entity.Actividad;
 import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
+import PARY.entity.pktNotifi_Reg.RegProp;
 import PARY.services.contratos.IActividadesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,8 @@ public class ActividadIMPL extends GenericsImpl<Actividad, IActividadDAO> implem
     }
 
     @Override
-    @Transactional
-    public void deleteOldAct() {
+    @Transactional(readOnly = true)
+    public List<Actividad> deleteOldAct() {
         String fecha = LocalDate.now().toString();
         int fechaNum = Integer.parseInt(fecha.replaceAll("-",""));
         HashMap<Long, Integer> fechaMap = new HashMap<>();
@@ -54,22 +55,32 @@ public class ActividadIMPL extends GenericsImpl<Actividad, IActividadDAO> implem
         });
 
         actividades.forEach(a -> {
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_ACTIVIDAD,
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_ACTIVIDAD,
                     a.getId(),
-                    Constant_RegAcciones.ELIMINACION,
+                    Constant_RegAcciones.ELIMINACION.name(),
                     a.getNombre());
 
             if (a.getReservacion() != null) {
                 for (Reservacion d :
                         a.getReservacion()) {
-                    RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION,
+                    RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION,
                             d.getId(),
-                            Constant_RegAcciones.ELIMINACION,
+                            Constant_RegAcciones.ELIMINACION.name(),
                             a.getNombre());
                 }
             }
         });
-        DAO.deleteAll(actividades);
+        return actividades;
+    }
+
+    @Override
+    public void deleteAll(List<Actividad> actividads) {
+        DAO.deleteAll(actividads);
+    }
+
+    @Override
+    public List<Actividad> findActividadesByProvinciaOrdenadas(String provincia) {
+        return DAO.findActividadesByNombreContainsOrderByFechaHoraDesc(provincia);
     }
 
 }

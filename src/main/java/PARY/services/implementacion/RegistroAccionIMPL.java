@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RegistroAccionIMPL extends GenericsImpl<RegistroAccion, IRegistroAccionDAO> implements IRegistroAccionService {
-    public static final String TIPO_ACTIVIDAD = "Actividad";
-    public static final String TIPO_RESERVACION = "Reservacion";
-    public static final String TIPO_PERFIL = "Perfil";
     private static IRegistroAccionDAO regDao;
 
     @Autowired
@@ -20,7 +17,7 @@ public class RegistroAccionIMPL extends GenericsImpl<RegistroAccion, IRegistroAc
         regDao = super.DAO;
     }
 
-    public static void crearReg(String tipo, long idTipo, Constant_RegAcciones accion, String nombre){
+    public static void crearReg(String tipo, long idTipo, String accion, String nombre){
         regDao.save(new RegistroAccion(idTipo,tipo,accion,nombre));
     }
 

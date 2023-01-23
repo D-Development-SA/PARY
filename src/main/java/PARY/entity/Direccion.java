@@ -19,12 +19,18 @@ public class Direccion implements Serializable {
     private String municipio;
     private String reparto;
 
-    public Direccion(String calle, String entreCalle, String provincia, String municipio, String reparto) {
+    public Direccion(Long id, String calle, String coordenadas, String entreCalle,
+                     String provincia, String municipio, String reparto) {
+        this.id = id;
         this.calle = calle;
+        this.coordenadas = coordenadas;
         this.entreCalle = entreCalle;
         this.provincia = provincia;
         this.municipio = municipio;
         this.reparto = reparto;
+    }
+
+    public Direccion() {
     }
 
     public Long getId() {
@@ -33,9 +39,6 @@ public class Direccion implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Direccion() {
     }
 
     public String getCalle() {

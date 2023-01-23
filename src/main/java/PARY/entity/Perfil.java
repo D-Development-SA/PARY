@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,37 +25,48 @@ public class Perfil extends Autenticacion implements Serializable {
     private String ci;
     //private Imagen imgPerfil;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Direccion direccion;
+
     @ManyToMany(mappedBy = "perfil", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnoreProperties("perfil")
     private Set<Reservacion> reservacion;
 
-    @OneToMany(mappedBy = "perfil",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "perfil",fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REFRESH})
     @JsonIgnoreProperties({"perfil","idPerfil","cantReserv","cantComent","cantMeEncanta"})
     private Set<Actividad> MisActividades;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REFRESH,CascadeType.REMOVE})
+    private List<Notificacion> notificacion;
 
     public Perfil() {
     }
 
-    public Perfil(long id, String nombre, String apellidos, String ci, Set<Reservacion> reservacion,
-                  Set<Actividad> misActividades) {
+    public Perfil(long id, String nombre, String apellidos, String ci, Direccion direccion,
+                  Set<Reservacion> reservacion, Set<Actividad> misActividades, List<Notificacion> notificacion) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.ci = ci;
+        this.direccion = direccion;
         this.reservacion = reservacion;
         MisActividades = misActividades;
+        this.notificacion = notificacion;
     }
 
     public Perfil(long id, String usuario, String contrasenna, String numTel, String codigoToken,
-                  long id1, String nombre, String apellidos, String ci, Set<Reservacion> reservacion,
-                  Set<Actividad> misActividades) {
+                  long id1, String nombre, String apellidos, String ci, Direccion direccion, Set<Reservacion> reservacion,
+                  Set<Actividad> misActividades, List<Notificacion> notificacion) {
         super(id, usuario, contrasenna, numTel, codigoToken);
         this.id = id1;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.ci = ci;
+        this.direccion = direccion;
         this.reservacion = reservacion;
         MisActividades = misActividades;
+        this.notificacion = notificacion;
     }
 
     @Override
@@ -105,6 +117,22 @@ public class Perfil extends Autenticacion implements Serializable {
 
     public void setMisActividades(Set<Actividad> misActividades) {
         MisActividades = misActividades;
+    }
+
+    public List<Notificacion> getNotificacion() {
+        return notificacion;
+    }
+
+    public void setNotificacion(List<Notificacion> notificacion) {
+        this.notificacion = notificacion;
+    }
+
+    public Direccion getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direccion direccion) {
+        this.direccion = direccion;
     }
 
     @Override

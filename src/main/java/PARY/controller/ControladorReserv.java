@@ -2,6 +2,7 @@ package PARY.controller;
 
 import PARY.entity.Reservacion;
 import PARY.entity.constantes.Constant_RegAcciones;
+import PARY.entity.pktNotifi_Reg.RegProp;
 import PARY.services.contratos.IReservacionService;
 import PARY.services.implementacion.RegistroAccionIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,49 +33,14 @@ public class ControladorReserv {
         return reserv.findAll().size();
     }
 
-//-----------------------PutMappings-----------------------------------
-
-    /* Actualiza una Reservacion en especifico */
-    @PutMapping("/reservaciones/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Reservacion updateReserv(@PathVariable long id, @RequestBody Reservacion reser){
-        Reservacion auxReser = reserv.findById(id);
-
-        auxReser.setAprobacion(reser.isAprobacion());
-        auxReser.setEstado(reser.getEstado());
-
-        if(auxReser.isAprobacion() && auxReser.getEstado().equals(Constant_RegAcciones.CAMBIO_ESTADO_N)){
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.APROBACION,
-                    auxReser.getActividad().getNombre());
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.CAMBIO_ESTADO_N,
-                    auxReser.getActividad().getNombre());
-        }else if (auxReser.isAprobacion() && auxReser.getEstado().equals(Constant_RegAcciones.CAMBIO_ESTADO_P)){
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.APROBACION,
-                    auxReser.getActividad().getNombre());
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.CAMBIO_ESTADO_P,
-                    auxReser.getActividad().getNombre());
-        }else{
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                    Constant_RegAcciones.CANCELACION,
-                    auxReser.getActividad().getNombre());
-        }
-
-
-        return reserv.save(auxReser);
-    }
-
 //-----------------------DeleteMappings-----------------------------------
 
     /* Elimina una Reservacion en especifico */
     @DeleteMapping("/reservaciones/deleteReserv/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteReserv(@PathVariable long id){
-        RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, id,
-                Constant_RegAcciones.ELIMINACION,
+        RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, id,
+                Constant_RegAcciones.ELIMINACION.name(),
                 reserv.findById(id).getActividad().getNombre());
 
         reserv.deleteById(id);
@@ -85,9 +51,11 @@ public class ControladorReserv {
     @ResponseStatus(HttpStatus.OK)
     public void deleteGroupReserv(@RequestBody List<Reservacion> reser){
         reser.stream().forEach(a->{
-            RegistroAccionIMPL.crearReg(RegistroAccionIMPL.TIPO_RESERVACION, a.getId(),
-                    Constant_RegAcciones.ELIMINACION, a.getActividad().getNombre());
+            RegistroAccionIMPL.crearReg(RegProp.TIPO_RESERVACION, a.getId(),
+                    Constant_RegAcciones.ELIMINACION.name(), a.getActividad().getNombre());
         });
+
+
         reserv.deleteAll(reser);
     }
 

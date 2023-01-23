@@ -9,6 +9,9 @@ public interface IActividadesService extends IGenericsService<Actividad>{
 
     List<Actividad> showRecentAct();
 
-    void deleteOldAct();
+    List<Actividad> deleteOldAct();
 
+    void deleteAll(List<Actividad> actividads);
+
+    List<Actividad> findActividadesByProvinciaOrdenadas(String provincia);
 }

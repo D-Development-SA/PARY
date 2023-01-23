@@ -3,7 +3,6 @@ package PARY.entity;
 import PARY.entity.constantes.Constant_Act;
 import PARY.entity.pktAct.Cantidad;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -31,13 +30,14 @@ public class Actividad implements Serializable {
     private Direccion direccion;
 
     @OneToMany(mappedBy = "actividad", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Reservacion> reservacion;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Cantidad cantidad;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "perfil_id", foreignKey = @ForeignKey(name = "FK_PERFIL_ACTIVIDAD_ID"))
     @JsonIgnore
     private Perfil perfil;
